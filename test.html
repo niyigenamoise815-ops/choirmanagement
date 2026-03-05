@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ TEST SUCCESSFUL!</h1>
+        <p class="success">Electron is working correctly!</p>
+        <p>If you can see this page, the problem is with your login.html file.</p>
+        <p>📍 Current file: test.html</p>
+        <p>📁 Working directory: <span id="path"></span></p>
+    </div>
+
+    <script>
+        // Display the current file path
+        document.getElementById('path').textContent = window.location.pathname;
+        
+        // Log to console for debugging
+        console.log('Test page loaded successfully!');
+        console.log('File path:', window.location.pathname);
+    </script>
+</body>
+</html>

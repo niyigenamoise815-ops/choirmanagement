@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choir Management - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 32px;
+        }
+
+        h2 {
+            color: #666;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .text-center {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .link {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Choir Management</h1>
+        <h2>Welcome Back! Please login to continue</h2>
+        
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email">
+        </div>
+        
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        
+        <button onclick="login()">Login</button>
+        <button class="secondary" onclick="goToRegister()">Create New Account</button>
+        
+        <div class="text-center">
+            <span class="link" onclick="forgotPassword()">Forgot Password?</span>
+        </div>
+        
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        function login() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+
+            // Clear previous messages
+            messageDiv.style.display = 'none';
+            messageDiv.className = 'message';
+
+            // Validation
+            if (!email || !password) {
+                showMessage('Please enter both email and password', 'error');
+                return;
+            }
+
+            // Get users from localStorage
+            let users = [];
+            try {
+                const storedUsers = localStorage.getItem('users');
+                if (storedUsers) {
+                    users = JSON.parse(storedUsers);
+                    console.log('Found users:', users.length); // Debug
+                } else {
+                    console.log('No users found in localStorage');
+                }
+            } catch (e) {
+                console.error('Error parsing users:', e);
+                showMessage('Error reading user data', 'error');
+                return;
+            }
+
+            // Find user
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (!user) {
+                showMessage('Invalid email or password. Please try again.', 'error');
+                return;
+            }
+
+            // Check if verified
+            if (!user.verified) {
+                // Store email for verification
+                localStorage.setItem('pendingVerification', email);
+                showMessage('Please verify your email first. Redirecting...', 'error');
+                
+                setTimeout(() => {
+                    window.location.href = 'verify.html';
+                }, 2000);
+                return;
+            }
+
+            // Store current user
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            
+            // Show success message
+            showMessage('Login successful! Redirecting to dashboard...', 'success');
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+        }
+
+        function goToRegister() {
+            window.location.href = 'register.html';
+        }
+
+        function forgotPassword() {
+            alert('Please contact your choir administrator to reset your password.\n\nOr click "Create New Account" to register.');
+        }
+    </script>
+</body>
+</html>
